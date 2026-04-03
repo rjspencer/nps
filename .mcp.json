@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "vybit": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@bitovi/vybit", "/Users/ryan/Code/AI Experiments/nps/apps/web"]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@acme/server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@acme/api": "workspace:*",
+    "@hono/trpc-server": "^0.4.2",
+    "hono": "^4.12.10"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^6.0.2",
+    "wrangler": "^4.80.0"
+  }
+}

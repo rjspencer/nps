@@ -1,0 +1,22 @@
+name = "acme-server"
+main = "src/index.ts"
+compatibility_date = "2025-09-24"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# NPS_API_KEY is set here as empty; override via wrangler secret in prod
+# and via .dev.vars locally (never commit real keys)
+NPS_API_KEY = ""
+
+# [d1_databases]
+# [[d1_databases]]
+# binding = "MY_DB"
+# database_name = "acme-db"
+# database_id = "your-database-id"
+
+[[kv_namespaces]]
+# Run: wrangler kv namespace create NPS_CACHE
+# Then paste the returned id and preview_id below
+binding = "NPS_CACHE"
+id = "REPLACE_WITH_KV_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_ID"

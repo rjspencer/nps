@@ -1,0 +1,28 @@
+{
+  "name": "@acme/ui-native",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gluestack-ui/core": "^3.0.13",
+    "@gluestack-ui/utils": "^3.0.15"
+  },
+  "peerDependencies": {
+    "nativewind": "^4.2.3",
+    "react": "^19.2.0",
+    "react-native": "^0.83.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "typescript": "^6.0.2"
+  }
+}
