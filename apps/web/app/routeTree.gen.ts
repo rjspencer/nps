@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ParksParkCodeRouteImport } from './routes/parks.$parkCode'
+import { Route as ParksParkCodeLessonPlansLessonPlanIdRouteImport } from './routes/parks.$parkCode_.lesson-plans.$lessonPlanId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,48 @@ const ParksParkCodeRoute = ParksParkCodeRouteImport.update({
   path: '/parks/$parkCode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ParksParkCodeLessonPlansLessonPlanIdRoute =
+  ParksParkCodeLessonPlansLessonPlanIdRouteImport.update({
+    id: '/parks/$parkCode_/lesson-plans/$lessonPlanId',
+    path: '/parks/$parkCode/lesson-plans/$lessonPlanId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/parks/$parkCode': typeof ParksParkCodeRoute
+  '/parks/$parkCode/lesson-plans/$lessonPlanId': typeof ParksParkCodeLessonPlansLessonPlanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/parks/$parkCode': typeof ParksParkCodeRoute
+  '/parks/$parkCode/lesson-plans/$lessonPlanId': typeof ParksParkCodeLessonPlansLessonPlanIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/parks/$parkCode': typeof ParksParkCodeRoute
+  '/parks/$parkCode_/lesson-plans/$lessonPlanId': typeof ParksParkCodeLessonPlansLessonPlanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/parks/$parkCode'
+  fullPaths:
+    | '/'
+    | '/parks/$parkCode'
+    | '/parks/$parkCode/lesson-plans/$lessonPlanId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/parks/$parkCode'
-  id: '__root__' | '/' | '/parks/$parkCode'
+  to: '/' | '/parks/$parkCode' | '/parks/$parkCode/lesson-plans/$lessonPlanId'
+  id:
+    | '__root__'
+    | '/'
+    | '/parks/$parkCode'
+    | '/parks/$parkCode_/lesson-plans/$lessonPlanId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ParksParkCodeRoute: typeof ParksParkCodeRoute
+  ParksParkCodeLessonPlansLessonPlanIdRoute: typeof ParksParkCodeLessonPlansLessonPlanIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +83,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParksParkCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parks/$parkCode_/lesson-plans/$lessonPlanId': {
+      id: '/parks/$parkCode_/lesson-plans/$lessonPlanId'
+      path: '/parks/$parkCode/lesson-plans/$lessonPlanId'
+      fullPath: '/parks/$parkCode/lesson-plans/$lessonPlanId'
+      preLoaderRoute: typeof ParksParkCodeLessonPlansLessonPlanIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ParksParkCodeRoute: ParksParkCodeRoute,
+  ParksParkCodeLessonPlansLessonPlanIdRoute:
+    ParksParkCodeLessonPlansLessonPlanIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

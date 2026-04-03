@@ -53,9 +53,16 @@ export interface LessonPlan {
   id: string
   title: string
   gradeLevel: string
-  subject: string
+  subject: string[]
   duration: string
   url: string
+  questionObjective: string
+  commonCore: {
+    stateStandards: string
+    additionalStandards: string
+    mathStandards: string[]
+    elaStandards: string[]
+  }
 }
 
 // Max parks the NPS API will return in one request
@@ -140,5 +147,17 @@ export const parksRouter = router({
         passportStampLocations: passportRes.data,
         lessonPlans: lessonPlansRes.data,
       }
+    }),
+
+  lessonPlanDetail: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const res = await npsGet<LessonPlan>(
+        '/lessonplans',
+        { id: input.id, limit: '1' },
+        ctx.env.NPS_API_KEY,
+        ctx.env.NPS_CACHE,
+      )
+      return res.data[0] ?? null
     }),
 })

@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, Linking, Pressable } from 'react-native'
+import { ScrollView, Text, View, Pressable } from 'react-native'
 
 const STAMP_TYPE_LABELS: Record<string, string> = {
   visitorcenters: 'Visitor Center',
@@ -10,7 +10,7 @@ const STAMP_TYPE_LABELS: Record<string, string> = {
 function formatStampType(type: string) {
   return STAMP_TYPE_LABELS[type] ?? type.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (c) => c.toUpperCase())
 }
-import { useLocalSearchParams, Stack } from 'expo-router'
+import { useLocalSearchParams, Stack, Link } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
 import type { NpsEvent, ThingToDo, VisitorCenter, PassportStampLocation, LessonPlan } from '@acme/api'
@@ -143,13 +143,13 @@ export default function ParkDetailScreen() {
                 <View key={lp.id} className="border border-gray-100 rounded-lg p-3 mb-2">
                   <Text className="font-medium text-gray-900">{lp.title}</Text>
                   <Text className="text-xs text-gray-400 mt-0.5">
-                    {[lp.gradeLevel, lp.subject, lp.duration].filter(Boolean).join(' · ')}
+                    {[lp.gradeLevel, Array.isArray(lp.subject) ? lp.subject.join(', ') : lp.subject, lp.duration].filter(Boolean).join(' · ')}
                   </Text>
-                  {lp.url ? (
-                    <Pressable onPress={() => Linking.openURL(lp.url)} className="mt-1">
+                  <Link href={`/parks/${parkCode}/lesson-plans/${lp.id}`} asChild>
+                    <Pressable className="mt-1">
                       <Text className="text-sm text-blue-600">View lesson plan →</Text>
                     </Pressable>
-                  ) : null}
+                  </Link>
                 </View>
               ))}
             </Section>

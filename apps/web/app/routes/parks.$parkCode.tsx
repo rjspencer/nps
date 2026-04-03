@@ -158,13 +158,15 @@ function ParkDetail() {
               <li key={lp.id} className="rounded-lg border p-4">
                 <h3 className="font-medium">{lp.title}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {[lp.gradeLevel, lp.subject, lp.duration].filter(Boolean).join(' · ')}
+                  {[lp.gradeLevel, Array.isArray(lp.subject) ? lp.subject.join(', ') : lp.subject, lp.duration].filter(Boolean).join(' · ')}
                 </p>
-                {lp.url && (
-                  <a href={lp.url} target="_blank" rel="noreferrer" className="mt-1 inline-block text-sm text-blue-600 hover:underline">
-                    View lesson plan →
-                  </a>
-                )}
+                <Link
+                  to="/parks/$parkCode/lesson-plans/$lessonPlanId"
+                  params={{ parkCode, lessonPlanId: lp.id }}
+                  className="mt-1 inline-block text-sm text-blue-600 hover:underline"
+                >
+                  View lesson plan →
+                </Link>
               </li>
             ))}
           </ul>
