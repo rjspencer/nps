@@ -22,6 +22,7 @@ export default function RootLayout() {
             }}
           >
             <Stack.Screen name="index" options={{ title: 'National Parks' }} />
+            <Stack.Screen name="parks/[parkCode]" options={{ title: '' }} />
           </Stack>
           <StatusBar style="auto" />
         </GluestackUIProvider>

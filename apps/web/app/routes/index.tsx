@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import * as React from 'react'
 import { useTRPC } from '~/trpc'
@@ -152,18 +152,22 @@ function Home() {
       ) : (
         <ul className="mt-4 space-y-3">
           {parks.map((park) => (
-            <li key={park.id} className="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
-              <div>
+            <li key={park.id}>
+              <Link
+                to="/parks/$parkCode"
+                params={{ parkCode: park.parkCode }}
+                className="block rounded-lg border p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+              >
                 <h2 className="font-semibold leading-snug">{park.fullName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {[park.designation, park.states].filter(Boolean).join(' · ')}
                 </p>
-              </div>
-              {park.description && (
-                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                  {park.description}
-                </p>
-              )}
+                {park.description && (
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                    {park.description}
+                  </p>
+                )}
+              </Link>
             </li>
           ))}
         </ul>

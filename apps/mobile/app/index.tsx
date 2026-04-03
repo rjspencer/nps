@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { Link } from 'expo-router'
 import { useState, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
@@ -109,19 +110,21 @@ export default function HomeScreen() {
   }, [isLoading, hasMore])
 
   const renderPark = useCallback(({ item }: { item: Park }) => (
-    <View className="border-b border-gray-100 px-4 py-3">
-      <Text className="font-semibold text-gray-900" numberOfLines={1}>
-        {item.fullName}
-      </Text>
-      <Text className="text-xs text-gray-400 mt-0.5">
-        {[item.designation, item.states].filter(Boolean).join(' · ')}
-      </Text>
-      {!!item.description && (
-        <Text className="text-sm text-gray-600 mt-1" numberOfLines={2}>
-          {item.description}
+    <Link href={`/parks/${item.parkCode}`} asChild>
+      <Pressable className="border-b border-gray-100 px-4 py-3 active:bg-gray-50">
+        <Text className="font-semibold text-gray-900" numberOfLines={1}>
+          {item.fullName}
         </Text>
-      )}
-    </View>
+        <Text className="text-xs text-gray-400 mt-0.5">
+          {[item.designation, item.states].filter(Boolean).join(' · ')}
+        </Text>
+        {!!item.description && (
+          <Text className="text-sm text-gray-600 mt-1" numberOfLines={2}>
+            {item.description}
+          </Text>
+        )}
+      </Pressable>
+    </Link>
   ), [])
 
   return (
