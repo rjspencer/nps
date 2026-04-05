@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import * as React from 'react'
 import { useTRPC } from '~/trpc'
-import type { NpsEvent, ThingToDo, VisitorCenter, PassportStampLocation, LessonPlan } from '@acme/api'
+import type { Park, NpsEvent, ThingToDo, VisitorCenter, PassportStampLocation, LessonPlan } from '@acme/api'
 
 const STAMP_TYPE_LABELS: Record<string, string> = {
   visitorcenters: 'Visitor Center',
@@ -18,6 +18,50 @@ function formatStampType(type: string) {
 export const Route = createFileRoute('/parks/$parkCode')({
   component: ParkDetail,
 })
+
+function HeroCarousel({ images }: { images: Park['images'] }) {
+  const slides = images.slice(0, 5)
+  const [idx, setIdx] = React.useState(0)
+  if (slides.length === 0) return null
+
+  const prev = () => setIdx((i) => (i - 1 + slides.length) % slides.length)
+  const next = () => setIdx((i) => (i + 1) % slides.length)
+  const img = slides[idx]!
+
+
+  return (
+    <div className="relative w-full overflow-hidden bg-muted" style={{ height: 'clamp(220px, 40vw, 480px)' }}>
+      <img src={img.url} alt={img.altText} className="w-full h-full object-cover" />
+
+      {/* Caption overlay */}
+      {(img.caption || img.credit) && (
+        <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-4 py-2">
+          {img.caption && <p className="text-white text-sm leading-snug">{img.caption}</p>}
+          {img.credit && <p className="text-white/70 text-xs mt-0.5">{img.credit}</p>}
+        </div>
+      )}
+
+      {slides.length > 1 && (
+        <>
+          <button onClick={prev} aria-label="Previous image" className="neo-btn absolute left-3 top-1/2 -translate-y-1/2 bg-background px-2.5 py-1 text-lg leading-none">‹</button>
+          <button onClick={next} aria-label="Next image" className="neo-btn absolute right-3 top-1/2 -translate-y-1/2 bg-background px-2.5 py-1 text-lg leading-none">›</button>
+
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                aria-label={`Go to image ${i + 1}`}
+                className="w-2.5 h-2.5 rounded-full border-2 border-white transition-colors"
+                style={{ background: i === idx ? 'white' : 'transparent' }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false)
@@ -68,7 +112,13 @@ function ParkDetail() {
   const { park, events, thingsToDo, visitorCenters, passportStampLocations, lessonPlans } = data
 
   return (
-    <div className="py-6 max-w-3xl">
+    <div>
+      {/* Hero carousel — full width, breaks out of container padding */}
+      <div className="-mx-4 -mt-4">
+        <HeroCarousel images={park.images} />
+      </div>
+
+      <div className="py-6 max-w-3xl">
       <Link to="/" className="text-sm text-muted-foreground hover:underline">← Back to parks</Link>
 
       {/* Header */}
@@ -78,11 +128,6 @@ function ParkDetail() {
       </p>
       {park.description && (
         <p className="mt-3 text-sm leading-relaxed">{park.description}</p>
-      )}
-      {park.url && (
-        <a href={park.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm text-blue-600 hover:underline">
-          Official website →
-        </a>
       )}
 
       {/* Visitor Centers */}
@@ -188,6 +233,7 @@ function ParkDetail() {
        passportStampLocations.length === 0 && lessonPlans.length === 0 && (
         <p className="mt-8 text-sm text-muted-foreground">No additional details available for this park.</p>
       )}
+      </div>
     </div>
   )
 }

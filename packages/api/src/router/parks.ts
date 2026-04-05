@@ -10,7 +10,7 @@ export interface Park {
   designation: string
   states: string
   url: string
-  images: { url: string; title: string; altText: string }[]
+  images: { url: string; title: string; altText: string; caption: string; credit: string }[]
 }
 
 export interface NpsEvent {
