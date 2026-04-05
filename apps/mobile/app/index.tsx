@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import { Link } from 'expo-router'
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
 import type { Park } from '@acme/api'
 
@@ -60,18 +60,28 @@ export default function HomeScreen() {
     return () => clearTimeout(t)
   }, [q])
 
-  const { data: allParks = [], isLoading, isError } = useQuery({
-    ...trpc.parks.list.queryOptions(),
-    staleTime: 1000 * 60 * 60 * 24,
+  const PAGE_STARTS = [0, 150, 300, 450]
+  const PAGE_SIZE = 150
+  const ONE_DAY = 1000 * 60 * 60 * 24
+
+  const results = useQueries({
+    queries: PAGE_STARTS.map((pageStart) => ({
+      ...trpc.parks.list.queryOptions({ start: pageStart, limit: PAGE_SIZE }),
+      staleTime: ONE_DAY,
+    })),
   })
 
+  const allParks: Park[] = results.flatMap((r) => r.data ?? [])
+  const isLoading = allParks.length === 0 && results.some((r) => r.isLoading)
+  const isError = allParks.length === 0 && results.every((r) => r.isError)
+
   const designations = useMemo(
-    () => [...new Set(allParks.map((p: Park) => p.designation).filter(Boolean))].sort() as string[],
+    () => [...new Set(allParks.map((p) => p.designation).filter(Boolean))].sort() as string[],
     [allParks],
   )
 
   const parks = useMemo(() => {
-    let result = allParks as Park[]
+    let result = allParks
     if (debouncedQ) result = result.filter((p) => p.fullName.toLowerCase().includes(debouncedQ.toLowerCase()))
     if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
     if (designation) result = result.filter((p) => p.designation === designation)

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import * as React from 'react'
 import { useTRPC } from '~/trpc'
 import type { Park } from '@acme/api'
@@ -40,6 +40,9 @@ const US_STATES = [
 ]
 
 const LIMIT = 20
+const PAGE_STARTS = [0, 150, 300, 450]
+const PAGE_SIZE = 150
+const ONE_DAY = 1000 * 60 * 60 * 24
 
 function Home() {
   const trpc = useTRPC()
@@ -53,18 +56,24 @@ function Home() {
   // Reset pagination on filter/sort change
   React.useEffect(() => { setStart(0) }, [q, stateCode, designation, sort])
 
-  const { data: allParks = [], isLoading, isError } = useQuery({
-    ...trpc.parks.list.queryOptions(),
-    staleTime: 1000 * 60 * 60 * 24,
+  const results = useQueries({
+    queries: PAGE_STARTS.map((pageStart) => ({
+      ...trpc.parks.list.queryOptions({ start: pageStart, limit: PAGE_SIZE }),
+      staleTime: ONE_DAY,
+    })),
   })
 
+  const allParks: Park[] = results.flatMap((r) => r.data ?? [])
+  const isLoading = allParks.length === 0 && results.some((r) => r.isLoading)
+  const isError = allParks.length === 0 && results.every((r) => r.isError)
+
   const designations = React.useMemo(
-    () => [...new Set(allParks.map((p: Park) => p.designation).filter(Boolean))].sort() as string[],
+    () => [...new Set(allParks.map((p) => p.designation).filter(Boolean))].sort() as string[],
     [allParks],
   )
 
   const filtered = React.useMemo(() => {
-    let result = allParks as Park[]
+    let result = allParks
     if (q) result = result.filter((p) => p.fullName.toLowerCase().includes(q.toLowerCase()))
     if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
     if (designation) result = result.filter((p) => p.designation === designation)

@@ -65,16 +65,23 @@ export interface LessonPlan {
   }
 }
 
+const PAGE_SIZE = 150
+
 export const parksRouter = router({
-  list: publicProcedure.query(async ({ ctx }) => {
-    const res = await npsGet<Park>(
-      '/parks',
-      { limit: '500', start: '0', sort: 'fullName' },
-      ctx.env.NPS_API_KEY,
-      ctx.env.NPS_CACHE,
-    )
-    return res.data
-  }),
+  list: publicProcedure
+    .input(z.object({
+      start: z.number().int().min(0).default(0),
+      limit: z.number().int().min(1).max(PAGE_SIZE).default(PAGE_SIZE),
+    }))
+    .query(async ({ input, ctx }) => {
+      const res = await npsGet<Park>(
+        '/parks',
+        { limit: String(input.limit), start: String(input.start), sort: 'fullName' },
+        ctx.env.NPS_API_KEY,
+        ctx.env.NPS_CACHE,
+      )
+      return res.data
+    }),
 
   detail: publicProcedure
     .input(z.object({ parkCode: z.string() }))
