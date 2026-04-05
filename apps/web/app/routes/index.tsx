@@ -45,39 +45,36 @@ function Home() {
   const trpc = useTRPC()
 
   const [q, setQ] = React.useState('')
-  const [debouncedQ, setDebouncedQ] = React.useState('')
   const [stateCode, setStateCode] = React.useState('')
   const [designation, setDesignation] = React.useState('')
   const [sort, setSort] = React.useState<'fullName' | '-fullName'>('fullName')
   const [start, setStart] = React.useState(0)
 
-  // Debounce search input
-  React.useEffect(() => {
-    const t = setTimeout(() => {
-      setDebouncedQ(q)
-      setStart(0)
-    }, 300)
-    return () => clearTimeout(t)
-  }, [q])
-
   // Reset pagination on filter/sort change
-  React.useEffect(() => { setStart(0) }, [stateCode, designation, sort])
+  React.useEffect(() => { setStart(0) }, [q, stateCode, designation, sort])
 
-  const { data: designationData } = useQuery(trpc.parks.designations.queryOptions())
+  const { data: allParks = [], isLoading, isError } = useQuery({
+    ...trpc.parks.list.queryOptions(),
+    staleTime: 1000 * 60 * 60 * 24,
+  })
 
-  const { data, isLoading, isError } = useQuery(
-    trpc.parks.list.queryOptions({
-      q: debouncedQ || undefined,
-      stateCode: stateCode || undefined,
-      designation: designation || undefined,
-      sort,
-      limit: LIMIT,
-      start,
-    }),
+  const designations = React.useMemo(
+    () => [...new Set(allParks.map((p: Park) => p.designation).filter(Boolean))].sort() as string[],
+    [allParks],
   )
 
-  const total = data?.total ?? 0
-  const parks: Park[] = data?.data ?? []
+  const filtered = React.useMemo(() => {
+    let result = allParks as Park[]
+    if (q) result = result.filter((p) => p.fullName.toLowerCase().includes(q.toLowerCase()))
+    if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
+    if (designation) result = result.filter((p) => p.designation === designation)
+    return [...result].sort((a, b) =>
+      sort === 'fullName' ? a.fullName.localeCompare(b.fullName) : b.fullName.localeCompare(a.fullName),
+    )
+  }, [allParks, q, stateCode, designation, sort])
+
+  const total = filtered.length
+  const page = filtered.slice(start, start + LIMIT)
   const rangeStart = total === 0 ? 0 : start + 1
   const rangeEnd = Math.min(start + LIMIT, total)
   const hasPrev = start > 0
@@ -114,7 +111,7 @@ function Home() {
           className="h-9 rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
         >
           <option value="">All types</option>
-          {designationData?.map((d) => (
+          {designations.map((d) => (
             <option key={d} value={d}>{d}</option>
           ))}
         </select>
@@ -151,7 +148,7 @@ function Home() {
         <p className="mt-4 text-sm text-red-600">Failed to fetch parks. Please try again.</p>
       ) : (
         <ul className="mt-4 space-y-3">
-          {parks.map((park) => (
+          {page.map((park) => (
             <li key={park.id}>
               <Link
                 to="/parks/$parkCode"

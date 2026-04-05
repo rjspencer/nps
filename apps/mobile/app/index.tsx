@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native'
 import { Link } from 'expo-router'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
 import type { Park } from '@acme/api'
@@ -45,8 +45,6 @@ const US_STATES = [
   { code: 'AS', name: 'American Samoa' }, { code: 'MP', name: 'Northern Mariana Islands' },
 ]
 
-const LIMIT = 20
-
 export default function HomeScreen() {
   const trpc = useTRPC()
   const [q, setQ] = useState('')
@@ -56,58 +54,34 @@ export default function HomeScreen() {
   const [designation, setDesignation] = useState('')
   const [designationPickerVisible, setDesignationPickerVisible] = useState(false)
   const [sortAsc, setSortAsc] = useState(true)
-  const [start, setStart] = useState(0)
-  const [allParks, setAllParks] = useState<Park[]>([])
-
-  const sort = sortAsc ? 'fullName' as const : '-fullName' as const
 
   // Debounce search
   useEffect(() => {
-    const t = setTimeout(() => {
-      setDebouncedQ(q)
-      setStart(0)
-      setAllParks([])
-    }, 300)
+    const t = setTimeout(() => setDebouncedQ(q), 300)
     return () => clearTimeout(t)
   }, [q])
 
-  // Reset on filter/sort change
-  useEffect(() => {
-    setStart(0)
-    setAllParks([])
-  }, [stateCode, designation, sort])
+  const { data: allParks = [], isLoading, isError } = useQuery({
+    ...trpc.parks.list.queryOptions(),
+    staleTime: 1000 * 60 * 60 * 24,
+  })
 
-  const { data: designationData } = useQuery(trpc.parks.designations.queryOptions())
-
-  const { data, isLoading, isError } = useQuery(
-    trpc.parks.list.queryOptions({
-      q: debouncedQ || undefined,
-      stateCode: stateCode || undefined,
-      designation: designation || undefined,
-      sort,
-      limit: LIMIT,
-      start,
-    }),
+  const designations = useMemo(
+    () => [...new Set(allParks.map((p: Park) => p.designation).filter(Boolean))].sort() as string[],
+    [allParks],
   )
 
-  // Accumulate pages
-  useEffect(() => {
-    if (data?.data) {
-      if (start === 0) {
-        setAllParks(data.data)
-      } else {
-        setAllParks((prev) => [...prev, ...data.data])
-      }
-    }
-  }, [data, start])
+  const parks = useMemo(() => {
+    let result = allParks as Park[]
+    if (debouncedQ) result = result.filter((p) => p.fullName.toLowerCase().includes(debouncedQ.toLowerCase()))
+    if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
+    if (designation) result = result.filter((p) => p.designation === designation)
+    return [...result].sort((a, b) =>
+      sortAsc ? a.fullName.localeCompare(b.fullName) : b.fullName.localeCompare(a.fullName),
+    )
+  }, [allParks, debouncedQ, stateCode, designation, sortAsc])
 
-  const total = data?.total ?? 0
-  const hasMore = start + LIMIT < total
   const selectedStateName = US_STATES.find((s) => s.code === stateCode)?.name
-
-  const handleLoadMore = useCallback(() => {
-    if (!isLoading && hasMore) setStart((s) => s + LIMIT)
-  }, [isLoading, hasMore])
 
   const renderPark = useCallback(({ item }: { item: Park }) => (
     <Link href={`/parks/${item.parkCode}`} asChild>
@@ -160,7 +134,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => { setSortAsc((v) => !v); setStart(0); setAllParks([]) }}
+            onPress={() => setSortAsc((v) => !v)}
             className="h-9 rounded-lg border border-gray-200 bg-gray-50 px-3 justify-center"
           >
             <Text className="text-sm text-gray-700">{sortAsc ? 'A–Z' : 'Z–A'}</Text>
@@ -168,41 +142,28 @@ export default function HomeScreen() {
         </View>
 
         <Text className="text-xs text-gray-400">
-          {isLoading && allParks.length === 0
+          {isLoading
             ? 'Loading…'
             : isError
             ? 'Could not load parks.'
-            : total === 0
+            : parks.length === 0
             ? 'No parks found.'
-            : `${total} parks`}
+            : `${parks.length} parks`}
         </Text>
       </View>
 
       {/* List */}
-      {isLoading && allParks.length === 0 ? (
+      {isLoading ? (
         <ActivityIndicator className="mt-12" size="large" color="#374151" />
-      ) : isError && allParks.length === 0 ? (
+      ) : isError ? (
         <Text className="mt-12 text-center text-sm text-red-500">
           Failed to load parks. Check your connection.
         </Text>
       ) : (
         <FlatList
-          data={allParks}
+          data={parks}
           keyExtractor={(item) => item.id}
           renderItem={renderPark}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.3}
-          ListFooterComponent={
-            isLoading && allParks.length > 0
-              ? () => <ActivityIndicator className="py-4" color="#374151" />
-              : hasMore
-              ? () => (
-                  <TouchableOpacity onPress={handleLoadMore} className="py-4 items-center">
-                    <Text className="text-sm text-gray-500">Load more</Text>
-                  </TouchableOpacity>
-                )
-              : null
-          }
         />
       )}
 
@@ -222,7 +183,7 @@ export default function HomeScreen() {
           </View>
 
           <FlatList
-            data={['', ...(designationData ?? [])]}
+            data={['', ...designations]}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <Pressable
