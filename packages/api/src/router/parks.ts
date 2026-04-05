@@ -11,6 +11,12 @@ export interface Park {
   states: string
   url: string
   images: { url: string; title: string; altText: string; caption: string; credit: string }[]
+  operatingHours: {
+    name: string
+    description: string
+    standardHours: Record<string, string>
+    exceptions: { name: string; startDate: string; endDate: string; exceptionHours: Record<string, string> }[]
+  }[]
 }
 
 export interface NpsEvent {

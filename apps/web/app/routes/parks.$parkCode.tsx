@@ -4,6 +4,8 @@ import * as React from 'react'
 import { useTRPC } from '~/trpc'
 import type { Park, NpsEvent, ThingToDo, VisitorCenter, PassportStampLocation, LessonPlan } from '@acme/api'
 
+const DAY_ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
 const STAMP_TYPE_LABELS: Record<string, string> = {
   visitorcenters: 'Visitor Center',
   parkoffices: 'Park Office',
@@ -128,6 +130,44 @@ function ParkDetail() {
       </p>
       {park.description && (
         <p className="mt-3 text-sm leading-relaxed">{park.description}</p>
+      )}
+
+      {/* Operating Hours */}
+      {park.operatingHours?.length > 0 && (
+        <Section title="Park Hours">
+          <div className="space-y-4">
+            {park.operatingHours.map((h, i) => (
+              <div key={i} className="neo-card p-4">
+                {park.operatingHours.length > 1 && (
+                  <h3 className="font-medium mb-2">{h.name}</h3>
+                )}
+                {h.description && (
+                  <p className="text-sm text-muted-foreground mb-3">{h.description}</p>
+                )}
+                <table className="w-full text-sm">
+                  <tbody>
+                    {DAY_ORDER.map((day) => h.standardHours[day] ? (
+                      <tr key={day} className="border-b last:border-0">
+                        <td className="py-1 pr-4 font-medium capitalize w-28">{day}</td>
+                        <td className="py-1 text-muted-foreground">{h.standardHours[day]}</td>
+                      </tr>
+                    ) : null)}
+                  </tbody>
+                </table>
+                {h.exceptions?.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs font-medium mb-1">Exceptions</p>
+                    {h.exceptions.map((ex, j) => (
+                      <p key={j} className="text-xs text-muted-foreground">
+                        {ex.name} ({ex.startDate} – {ex.endDate})
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Section>
       )}
 
       {/* Visitor Centers */}
