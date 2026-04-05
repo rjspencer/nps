@@ -50,10 +50,9 @@ const THEMES: { name: Theme; label: string; icon: React.ReactNode }[] = [
     label: 'Desert',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v2M4.93 4.93l1.41 1.41M19.07 4.93l-1.41 1.41M2 12h2M20 12h2"/>
-        <path d="M12 6a6 6 0 0 1 6 6H6a6 6 0 0 1 6-6z"/>
-        <path d="M2 19c2.5-2 5-3 7-3s3.5 1 5 3"/>
-        <path d="M14 19c1.5-2 3.5-3 5-3s2.5 1 3 3"/>
+        <path d="M12 21V5"/>
+        <path d="M12 13H8V8"/>
+        <path d="M12 10h4V5"/>
       </svg>
     ),
   },
@@ -62,11 +61,10 @@ const THEMES: { name: Theme; label: string; icon: React.ReactNode }[] = [
     label: 'Tropical',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22v-9"/>
-        <path d="M12 13C9 8 5 7 3 9c3 0 6 1 9 4z"/>
-        <path d="M12 13c3-5 7-6 9-4-3 0-6 1-9 4z"/>
-        <path d="M12 13c-1-5-4-8-7-7 2 2 4 5 7 7z"/>
-        <path d="M12 13c1-5 4-8 7-7-2 2-4 5-7 7z"/>
+        <path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4"/>
+        <path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3"/>
+        <path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35z"/>
+        <path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14"/>
       </svg>
     ),
   },
@@ -75,9 +73,8 @@ const THEMES: { name: Theme; label: string; icon: React.ReactNode }[] = [
     label: 'Forest',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 3L3 18h18z"/>
-        <path d="M12 9L5 21h14z" opacity="0.6"/>
-        <line x1="12" y1="18" x2="12" y2="21"/>
+        <path d="M12 2L4 14h4l-3 6h14l-3-6h4z"/>
+        <line x1="12" y1="20" x2="12" y2="22"/>
       </svg>
     ),
   },

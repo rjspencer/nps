@@ -13,7 +13,7 @@
 
   /* ── Dark ──────────────────────────────────────────── */
   html.dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.22 0 0);
     --foreground: oklch(0.985 0 0);
     --muted: oklch(0.22 0 0);
     --muted-foreground: oklch(0.65 0 0);
@@ -24,7 +24,7 @@
   /* ── Desert ────────────────────────────────────────── */
   html.desert {
     --background: oklch(0.94 0.04 75);
-    --foreground: oklch(0.25 0.06 50);
+    --foreground: oklch(0.38 0.10 148);
     --muted: oklch(0.87 0.04 75);
     --muted-foreground: oklch(0.52 0.05 60);
     --border: oklch(0.70 0.07 65);
@@ -34,7 +34,7 @@
   /* ── Tropical ──────────────────────────────────────── */
   html.tropical {
     --background: oklch(0.96 0.04 145);
-    --foreground: oklch(0.20 0.09 155);
+    --foreground: oklch(0.38 0.09 155);
     --muted: oklch(0.90 0.05 148);
     --muted-foreground: oklch(0.50 0.07 152);
     --border: oklch(0.66 0.10 152);
@@ -43,22 +43,27 @@
 
   /* ── Forest ────────────────────────────────────────── */
   html.forest {
-    --background: oklch(0.95 0.02 162);
-    --foreground: oklch(0.20 0.07 160);
-    --muted: oklch(0.88 0.03 160);
-    --muted-foreground: oklch(0.52 0.05 160);
-    --border: oklch(0.62 0.08 160);
-    --ring: oklch(0.42 0.08 58);
+    --background: oklch(0.18 0.06 155);
+    --foreground: oklch(0.92 0.03 120);
+    --muted: oklch(0.30 0.06 155);
+    --muted-foreground: oklch(0.72 0.04 140);
+    --border: oklch(0.48 0.08 58);
+    --ring: oklch(0.55 0.10 58);
   }
 
   /* ── Maritime ──────────────────────────────────────── */
   html.maritime {
-    --background: oklch(0.96 0.02 228);
-    --foreground: oklch(0.20 0.08 248);
-    --muted: oklch(0.90 0.03 228);
-    --muted-foreground: oklch(0.52 0.06 238);
-    --border: oklch(0.65 0.08 238);
-    --ring: oklch(0.52 0.14 248);
+    --background: oklch(0.18 0.06 248);
+    --foreground: oklch(0.93 0.02 210);
+    --muted: oklch(0.26 0.06 248);
+    --muted-foreground: oklch(0.72 0.04 225);
+    --border: oklch(0.55 0.18 22);
+    --ring: oklch(0.52 0.20 22);
+  }
+
+  html.desert body {
+    background: linear-gradient(135deg, oklch(0.94 0.04 75) 0%, oklch(0.85 0.08 32) 100%);
+    min-height: 100vh;
   }
 
   * {
@@ -69,6 +74,28 @@
     background-color: var(--background);
     color: var(--foreground);
   }
+}
+
+/* ── Theme card overrides (must be outside @layer to beat .neo-card) ── */
+html.desert .neo-card {
+  background-color: oklch(0.99 0.01 75);
+}
+
+html.tropical .neo-card {
+  background-color: oklch(0.99 0.01 145);
+}
+
+html.forest .neo-card {
+  background-color: oklch(0.22 0.05 68);
+  border-color: oklch(0.48 0.08 58);
+  box-shadow: 4px 4px 0 oklch(0.48 0.08 58);
+}
+
+html.maritime .neo-card {
+  background-color: oklch(0.96 0.02 228);
+  color: oklch(0.20 0.08 248);
+  border-color: oklch(0.55 0.18 22);
+  box-shadow: 4px 4px 0 oklch(0.55 0.18 22);
 }
 
 /* ── Neobrutalism utilities ────────────────────────────── */
