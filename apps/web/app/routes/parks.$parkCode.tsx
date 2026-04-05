@@ -20,10 +20,19 @@ export const Route = createFileRoute('/parks/$parkCode')({
 })
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = React.useState(false)
   return (
     <section className="mt-8">
-      <h2 className="text-xl font-semibold tracking-tight border-b pb-2 mb-4">{title}</h2>
-      {children}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between border-b pb-2 mb-4 group"
+      >
+        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <span className="text-muted-foreground text-sm transition-transform duration-200" style={{ display: 'inline-block', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>
+          &#8964;
+        </span>
+      </button>
+      {open && children}
     </section>
   )
 }

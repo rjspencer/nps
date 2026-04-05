@@ -1,4 +1,5 @@
 import { ScrollView, Text, View, Pressable } from 'react-native'
+import * as React from 'react'
 
 const STAMP_TYPE_LABELS: Record<string, string> = {
   visitorcenters: 'Visitor Center',
@@ -16,12 +17,16 @@ import { useTRPC } from '@/lib/trpc'
 import type { NpsEvent, ThingToDo, VisitorCenter, PassportStampLocation, LessonPlan } from '@acme/api'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = React.useState(false)
   return (
     <View className="mt-6">
-      <Text className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-3">
-        {title}
-      </Text>
-      {children}
+      <Pressable onPress={() => setOpen(o => !o)} className="flex-row items-center justify-between border-b border-gray-100 pb-2 mb-3">
+        <Text className="text-lg font-semibold text-gray-900">{title}</Text>
+        <Text className="text-gray-400 text-base" style={{ transform: [{ rotate: open ? '0deg' : '-90deg' }] }}>
+          ⌄
+        </Text>
+      </Pressable>
+      {open && children}
     </View>
   )
 }
