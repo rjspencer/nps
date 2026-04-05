@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @layer base {
+  /* ── Light (default) ───────────────────────────────── */
   :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -10,6 +11,7 @@
     --ring: oklch(0.708 0 0);
   }
 
+  /* ── Dark ──────────────────────────────────────────── */
   html.dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
@@ -17,6 +19,46 @@
     --muted-foreground: oklch(0.65 0 0);
     --border: oklch(0.28 0 0);
     --ring: oklch(0.45 0 0);
+  }
+
+  /* ── Desert ────────────────────────────────────────── */
+  html.desert {
+    --background: oklch(0.94 0.04 75);
+    --foreground: oklch(0.25 0.06 50);
+    --muted: oklch(0.87 0.04 75);
+    --muted-foreground: oklch(0.52 0.05 60);
+    --border: oklch(0.70 0.07 65);
+    --ring: oklch(0.58 0.12 38);
+  }
+
+  /* ── Tropical ──────────────────────────────────────── */
+  html.tropical {
+    --background: oklch(0.96 0.04 145);
+    --foreground: oklch(0.20 0.09 155);
+    --muted: oklch(0.90 0.05 148);
+    --muted-foreground: oklch(0.50 0.07 152);
+    --border: oklch(0.66 0.10 152);
+    --ring: oklch(0.63 0.16 25);
+  }
+
+  /* ── Forest ────────────────────────────────────────── */
+  html.forest {
+    --background: oklch(0.95 0.02 162);
+    --foreground: oklch(0.20 0.07 160);
+    --muted: oklch(0.88 0.03 160);
+    --muted-foreground: oklch(0.52 0.05 160);
+    --border: oklch(0.62 0.08 160);
+    --ring: oklch(0.42 0.08 58);
+  }
+
+  /* ── Maritime ──────────────────────────────────────── */
+  html.maritime {
+    --background: oklch(0.96 0.02 228);
+    --foreground: oklch(0.20 0.08 248);
+    --muted: oklch(0.90 0.03 228);
+    --muted-foreground: oklch(0.52 0.06 238);
+    --border: oklch(0.65 0.08 238);
+    --ring: oklch(0.52 0.14 248);
   }
 
   * {
@@ -27,4 +69,38 @@
     background-color: var(--background);
     color: var(--foreground);
   }
+}
+
+/* ── Neobrutalism utilities ────────────────────────────── */
+.neo-card {
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 var(--foreground);
+}
+
+.neo-btn {
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--foreground);
+  font-weight: 700;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.neo-btn:hover:not(:disabled) {
+  box-shadow: 4px 4px 0 var(--foreground);
+}
+
+.neo-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.neo-input {
+  border: 2px solid var(--foreground);
+  border-radius: 4px;
+  outline: none;
+}
+
+.neo-input:focus {
+  box-shadow: 3px 3px 0 var(--foreground);
 }

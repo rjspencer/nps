@@ -57,14 +57,14 @@ function LessonPlanDetail() {
 
       {lp.questionObjective && (
         <section className="mt-8">
-          <h2 className="text-xl font-semibold tracking-tight border-b pb-2 mb-3">Learning Objectives</h2>
+          <h2 className="text-xl font-semibold tracking-tight pb-2 mb-3" style={{ borderBottom: '2px solid var(--foreground)' }}>Learning Objectives</h2>
           <p className="text-sm leading-relaxed">{lp.questionObjective}</p>
         </section>
       )}
 
       {hasStandards && (
         <section className="mt-8">
-          <h2 className="text-xl font-semibold tracking-tight border-b pb-2 mb-3">Educational Standards</h2>
+          <h2 className="text-xl font-semibold tracking-tight pb-2 mb-3" style={{ borderBottom: '2px solid var(--foreground)' }}>Educational Standards</h2>
           <div className="space-y-4">
             {lp.commonCore.stateStandards && (
               <div>

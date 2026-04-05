@@ -25,7 +25,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section className="mt-8">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between border-b pb-2 mb-4 group"
+        className="w-full flex items-center justify-between pb-2 mb-4 group"
+        style={{ borderBottom: '2px solid var(--foreground)' }}
       >
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         <span className="text-muted-foreground text-sm transition-transform duration-200" style={{ display: 'inline-block', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>
@@ -89,7 +90,7 @@ function ParkDetail() {
         <Section title="Visitor Centers">
           <ul className="space-y-4">
             {visitorCenters.map((vc: VisitorCenter) => (
-              <li key={vc.id} className="rounded-lg border p-4">
+              <li key={vc.id} className="neo-card p-4">
                 <h3 className="font-medium">{vc.name}</h3>
                 {vc.description && <p className="mt-1 text-sm text-muted-foreground">{vc.description}</p>}
                 {vc.directionsInfo && <p className="mt-1 text-sm text-muted-foreground"><span className="font-medium">Directions:</span> {vc.directionsInfo}</p>}
@@ -109,7 +110,7 @@ function ParkDetail() {
         <Section title="Upcoming Events">
           <ul className="space-y-3">
             {events.map((ev: NpsEvent) => (
-              <li key={ev.id} className="rounded-lg border p-4">
+              <li key={ev.id} className="neo-card p-4">
                 <h3 className="font-medium">{ev.title}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {[ev.dateStart, ev.dateEnd].filter(Boolean).join(' – ')}
@@ -131,7 +132,7 @@ function ParkDetail() {
         <Section title="Things To Do">
           <ul className="space-y-3">
             {thingsToDo.map((t: ThingToDo) => (
-              <li key={t.id} className="rounded-lg border p-4">
+              <li key={t.id} className="neo-card p-4">
                 <h3 className="font-medium">{t.title}</h3>
                 {t.shortDescription && (
                   <p className="mt-1 text-sm text-muted-foreground">{t.shortDescription}</p>
@@ -150,7 +151,7 @@ function ParkDetail() {
         <Section title="Passport Stamp Locations">
           <ul className="space-y-2">
             {passportStampLocations.map((p: PassportStampLocation) => (
-              <li key={p.id} className="rounded-lg border p-4">
+              <li key={p.id} className="neo-card p-4">
                 <h3 className="font-medium">{p.label}</h3>
                 {p.type && <p className="text-xs text-muted-foreground mt-0.5">{formatStampType(p.type)}</p>}
               </li>
@@ -164,7 +165,7 @@ function ParkDetail() {
         <Section title="Lesson Plans">
           <ul className="space-y-2">
             {lessonPlans.map((lp: LessonPlan) => (
-              <li key={lp.id} className="rounded-lg border p-4">
+              <li key={lp.id} className="neo-card p-4">
                 <h3 className="font-medium">{lp.title}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {[lp.gradeLevel, Array.isArray(lp.subject) ? lp.subject.join(', ') : lp.subject, lp.duration].filter(Boolean).join(' · ')}

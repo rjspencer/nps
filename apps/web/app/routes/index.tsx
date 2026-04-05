@@ -100,13 +100,13 @@ function Home() {
           placeholder="Search by name..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="h-9 rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-ring w-56"
+          className="neo-input h-9 px-3 text-sm w-56 bg-background"
         />
 
         <select
           value={stateCode}
           onChange={(e) => setStateCode(e.target.value)}
-          className="h-9 rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="neo-input h-9 px-3 text-sm bg-background"
         >
           <option value="">All states</option>
           {US_STATES.map((s) => (
@@ -117,7 +117,7 @@ function Home() {
         <select
           value={designation}
           onChange={(e) => setDesignation(e.target.value)}
-          className="h-9 rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="neo-input h-9 px-3 text-sm bg-background"
         >
           <option value="">All types</option>
           {designations.map((d) => (
@@ -128,7 +128,7 @@ function Home() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as 'fullName' | '-fullName')}
-          className="h-9 rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="neo-input h-9 px-3 text-sm bg-background"
         >
           <option value="fullName">Name A–Z</option>
           <option value="-fullName">Name Z–A</option>
@@ -150,7 +150,7 @@ function Home() {
       {isLoading ? (
         <ul className="mt-4 space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <li key={i} className="rounded-lg border p-4 space-y-2 animate-pulse">
+            <li key={i} className="neo-card p-4 space-y-2 animate-pulse">
               <div className="h-4 w-2/3 rounded bg-muted" />
               <div className="h-3 w-1/3 rounded bg-muted" />
               <div className="h-3 w-full rounded bg-muted" />
@@ -167,7 +167,7 @@ function Home() {
               <Link
                 to="/parks/$parkCode"
                 params={{ parkCode: park.parkCode }}
-                className="block rounded-lg border p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                className="neo-card block p-4 hover:bg-muted/50 transition-colors cursor-pointer"
               >
                 <h2 className="font-semibold leading-snug">{park.fullName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -190,14 +190,14 @@ function Home() {
           <button
             disabled={!hasPrev}
             onClick={() => setStart(start - LIMIT)}
-            className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+            className="neo-btn px-3 py-1.5 text-sm disabled:opacity-40 bg-background"
           >
             ← Previous
           </button>
           <button
             disabled={!hasNext}
             onClick={() => setStart(start + LIMIT)}
-            className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-40 hover:bg-muted transition-colors"
+            className="neo-btn px-3 py-1.5 text-sm disabled:opacity-40 bg-background"
           >
             Next →
           </button>
