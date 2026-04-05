@@ -140,8 +140,13 @@ function Home() {
       {/* List */}
       {isLoading ? (
         <ul className="mt-4 space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <li key={i} className="h-24 animate-pulse rounded-lg border bg-muted" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <li key={i} className="rounded-lg border p-4 space-y-2 animate-pulse">
+              <div className="h-4 w-2/3 rounded bg-muted" />
+              <div className="h-3 w-1/3 rounded bg-muted" />
+              <div className="h-3 w-full rounded bg-muted" />
+              <div className="h-3 w-4/5 rounded bg-muted" />
+            </li>
           ))}
         </ul>
       ) : isError ? (

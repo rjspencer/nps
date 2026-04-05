@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   Pressable,
@@ -154,7 +153,16 @@ export default function HomeScreen() {
 
       {/* List */}
       {isLoading ? (
-        <ActivityIndicator className="mt-12" size="large" color="#374151" />
+        <View className="flex-1">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <View key={i} className="border-b border-gray-100 px-4 py-3 gap-2">
+              <View className="h-4 w-2/3 rounded bg-gray-200" />
+              <View className="h-3 w-1/3 rounded bg-gray-100" />
+              <View className="h-3 w-full rounded bg-gray-100" />
+              <View className="h-3 w-4/5 rounded bg-gray-100" />
+            </View>
+          ))}
+        </View>
       ) : isError ? (
         <Text className="mt-12 text-center text-sm text-red-500">
           Failed to load parks. Check your connection.
