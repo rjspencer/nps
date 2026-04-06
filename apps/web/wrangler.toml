@@ -4,4 +4,4 @@ compatibility_flags = ["nodejs_compat"]
 main = "@tanstack/react-start/server-entry"
 
 [vars]
-# Add environment variables here
+VITE_TRPC_URL = "https://acme-server.235trv.workers.dev/trpc"

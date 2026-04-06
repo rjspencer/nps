@@ -14,7 +14,7 @@ const app = new Hono<{ Bindings: Env }>()
 app.use(
   '/trpc/*',
   cors({
-    origin: ['http://localhost:3000', 'https://your-domain.com'],
+    origin: ['http://localhost:3000', 'https://acme-web.235trv.workers.dev'],
     allowMethods: ['GET', 'POST', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
   })
