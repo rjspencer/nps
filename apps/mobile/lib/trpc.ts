@@ -1,12 +1,14 @@
 import { createTRPCContext } from '@trpc/tanstack-react-query'
 import { createTRPCClient, httpBatchLink } from '@trpc/client'
 import { QueryClient } from '@tanstack/react-query'
+import { Platform } from 'react-native'
 import type { AppRouter } from '@acme/api'
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>()
 
+const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
 const TRPC_URL = __DEV__
-  ? 'http://localhost:8787/trpc'
+  ? `http://${DEV_HOST}:8787/trpc`
   : 'https://acme-server.YOUR_SUBDOMAIN.workers.dev/trpc'
 
 export function makeTRPCClient() {

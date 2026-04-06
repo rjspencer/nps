@@ -8,4 +8,4 @@
 
 export { ThemeProvider, useTheme, THEMES } from './ThemeProvider'
 export type { ThemeName } from './ThemeProvider'
-export { themeVars, themeTokens } from './themes'
+export { themeTokens } from './themes'

@@ -1,8 +1,6 @@
-import { vars } from 'nativewind'
-
 export type ThemeName = 'light' | 'dark' | 'desert' | 'tropical' | 'forest' | 'maritime'
 
-const tokens: Record<ThemeName, {
+export const themeTokens: Record<ThemeName, {
   background: string
   foreground: string
   muted: string
@@ -18,20 +16,4 @@ const tokens: Record<ThemeName, {
   maritime: { background: '#0e1e3a', foreground: '#e8f0f5', muted: '#1a2e4a', mutedForeground: '#a8c8d8', border: '#b85030', ring: '#a84828' },
 }
 
-export const themeVars = Object.fromEntries(
-  Object.entries(tokens).map(([name, t]) => [
-    name,
-    vars({
-      '--background': t.background,
-      '--foreground': t.foreground,
-      '--muted': t.muted,
-      '--muted-foreground': t.mutedForeground,
-      '--border': t.border,
-      '--ring': t.ring,
-    }),
-  ])
-) as Record<ThemeName, ReturnType<typeof vars>>
-
 export const THEMES: ThemeName[] = ['light', 'dark', 'desert', 'tropical', 'forest', 'maritime']
-
-export const themeTokens = tokens
