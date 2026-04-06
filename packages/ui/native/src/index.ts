@@ -6,4 +6,6 @@
 // export { Button } from './components/button'
 // export { Text } from './components/text'
 
-export {}
+export { ThemeProvider, useTheme, THEMES } from './ThemeProvider'
+export type { ThemeName } from './ThemeProvider'
+export { themeVars, themeTokens } from './themes'

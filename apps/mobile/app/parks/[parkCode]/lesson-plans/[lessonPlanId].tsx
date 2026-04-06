@@ -2,10 +2,12 @@ import { ScrollView, Text, View } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
+import { useTheme } from '@acme/ui-native'
 
 export default function LessonPlanDetailScreen() {
   const { lessonPlanId } = useLocalSearchParams<{ parkCode: string; lessonPlanId: string }>()
   const trpc = useTRPC()
+  const { styles } = useTheme()
 
   const { data: lp, isLoading, isError } = useQuery(
     trpc.parks.lessonPlanDetail.queryOptions({ id: lessonPlanId }),
@@ -26,63 +28,63 @@ export default function LessonPlanDetailScreen() {
       <Stack.Screen options={{ title: lp?.title ?? 'Lesson Plan' }} />
 
       {isLoading ? (
-        <View className="flex-1 bg-white px-4 pt-6 space-y-3">
+        <View style={[{ flex: 1, paddingHorizontal: 16, paddingTop: 24, gap: 12 }, styles.bg]}>
           {[40, 24, 100].map((h, i) => (
-            <View key={i} style={{ height: h }} className="rounded-lg bg-gray-100" />
+            <View key={i} style={[styles.muted, { height: h, borderRadius: 8 }]} />
           ))}
         </View>
       ) : isError || !lp ? (
-        <View className="flex-1 bg-white px-4 pt-6">
+        <View style={[{ flex: 1, paddingHorizontal: 16, paddingTop: 24 }, styles.bg]}>
           <Text className="text-red-500 text-sm">Could not load lesson plan.</Text>
         </View>
       ) : (
-        <ScrollView className="flex-1 bg-white" contentContainerClassName="px-4 pt-4 pb-10">
-          <Text className="text-2xl font-bold text-gray-900">{lp.title}</Text>
-          {meta ? <Text className="text-xs text-gray-400 mt-1">{meta}</Text> : null}
+        <ScrollView style={[{ flex: 1 }, styles.bg]} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40 }}>
+          <Text style={[styles.text, { fontSize: 22, fontWeight: 'bold' }]}>{lp.title}</Text>
+          {meta ? <Text style={[styles.textMuted, { fontSize: 12, marginTop: 4 }]}>{meta}</Text> : null}
 
           {lp.questionObjective ? (
-            <View className="mt-6">
-              <Text className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-3">
+            <View style={{ marginTop: 24 }}>
+              <Text style={[styles.text, styles.borderBottom, { fontSize: 17, fontWeight: '600', paddingBottom: 8, marginBottom: 12 }]}>
                 Learning Objectives
               </Text>
-              <Text className="text-sm text-gray-700 leading-relaxed">{lp.questionObjective}</Text>
+              <Text style={[styles.text, { fontSize: 14, lineHeight: 22 }]}>{lp.questionObjective}</Text>
             </View>
           ) : null}
 
           {hasStandards ? (
-            <View className="mt-6">
-              <Text className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mb-3">
+            <View style={{ marginTop: 24 }}>
+              <Text style={[styles.text, styles.borderBottom, { fontSize: 17, fontWeight: '600', paddingBottom: 8, marginBottom: 12 }]}>
                 Educational Standards
               </Text>
 
               {lp.commonCore.stateStandards ? (
-                <View className="mb-4">
-                  <Text className="text-sm font-medium text-gray-900 mb-1">State Standards</Text>
-                  <Text className="text-sm text-gray-600">{lp.commonCore.stateStandards}</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={[styles.text, { fontSize: 14, fontWeight: '500', marginBottom: 4 }]}>State Standards</Text>
+                  <Text style={[styles.textMuted, { fontSize: 14 }]}>{lp.commonCore.stateStandards}</Text>
                 </View>
               ) : null}
 
               {lp.commonCore.additionalStandards ? (
-                <View className="mb-4">
-                  <Text className="text-sm font-medium text-gray-900 mb-1">Additional Standards</Text>
-                  <Text className="text-sm text-gray-600">{lp.commonCore.additionalStandards}</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={[styles.text, { fontSize: 14, fontWeight: '500', marginBottom: 4 }]}>Additional Standards</Text>
+                  <Text style={[styles.textMuted, { fontSize: 14 }]}>{lp.commonCore.additionalStandards}</Text>
                 </View>
               ) : null}
 
               {lp.commonCore.mathStandards?.length > 0 ? (
-                <View className="mb-4">
-                  <Text className="text-sm font-medium text-gray-900 mb-1">Math Standards</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={[styles.text, { fontSize: 14, fontWeight: '500', marginBottom: 4 }]}>Math Standards</Text>
                   {lp.commonCore.mathStandards.map((s, i) => (
-                    <Text key={i} className="text-sm text-gray-600">• {s}</Text>
+                    <Text key={i} style={[styles.textMuted, { fontSize: 14 }]}>• {s}</Text>
                   ))}
                 </View>
               ) : null}
 
               {lp.commonCore.elaStandards?.length > 0 ? (
-                <View className="mb-4">
-                  <Text className="text-sm font-medium text-gray-900 mb-1">ELA Standards</Text>
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={[styles.text, { fontSize: 14, fontWeight: '500', marginBottom: 4 }]}>ELA Standards</Text>
                   {lp.commonCore.elaStandards.map((s, i) => (
-                    <Text key={i} className="text-sm text-gray-600">• {s}</Text>
+                    <Text key={i} style={[styles.textMuted, { fontSize: 14 }]}>• {s}</Text>
                   ))}
                 </View>
               ) : null}

@@ -11,6 +11,7 @@ import { Link } from 'expo-router'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import { useTRPC } from '@/lib/trpc'
+import { useTheme } from '@acme/ui-native'
 import type { Park } from '@acme/api'
 
 const US_STATES = [
@@ -44,8 +45,65 @@ const US_STATES = [
   { code: 'AS', name: 'American Samoa' }, { code: 'MP', name: 'Northern Mariana Islands' },
 ]
 
+const DESIGNATION_GROUPS: { label: string; values: string[] }[] = [
+  {
+    label: 'National Battlefields & Military Parks',
+    values: ['National Battlefield', 'National Battlefield Park', 'National Battlefield Site', 'National Military Park'],
+  },
+  {
+    label: 'National Historical Parks',
+    values: ['National Historical Park', 'National Historical Park and Ecological Preserve', 'National Historical Park and Preserve', 'National Historical Reserve', 'Part of Colonial National Historical Park'],
+  },
+  {
+    label: 'National Historic Sites',
+    values: ['National Historic Site', 'National Historic Area'],
+  },
+  {
+    label: 'International Parks & Historic Sites',
+    values: ['International Park', 'International Historic Site'],
+  },
+  {
+    label: 'National Memorials',
+    values: ['Memorial', 'National Memorial'],
+  },
+  {
+    label: 'National Monuments',
+    values: ['National Monument', 'National Monument & Preserve', 'National Monument and Historic Shrine', 'Part of Statue of Liberty National Monument'],
+  },
+  {
+    label: 'National Parks',
+    values: ['National Park', 'National Park & Preserve', 'National Parks', 'National and State Parks'],
+  },
+  {
+    label: 'National Preserves & Reserves',
+    values: ['National Preserve', 'National Reserve', 'Ecological & Historic Preserve'],
+  },
+  {
+    label: 'National Rivers & Scenic Rivers',
+    values: ['National River', 'National River & Recreation Area', 'National Recreational River', 'National Scenic River', 'National Scenic Riverway', 'National Scenic Riverways', 'National Wild and Scenic River', 'Scenic & Recreational River', 'Wild & Scenic River', 'Wild River'],
+  },
+  {
+    label: 'National Trails',
+    values: ['National Geologic Trail', 'National Historic Trail', 'National Scenic Trail'],
+  },
+  {
+    label: 'Parks',
+    values: ['Park'],
+  },
+  {
+    label: 'Parkways',
+    values: ['Memorial Parkway', 'Parkway'],
+  },
+]
+
+const DESIGNATION_TO_GROUP = new Map<string, string>()
+for (const group of DESIGNATION_GROUPS) {
+  for (const v of group.values) DESIGNATION_TO_GROUP.set(v, group.label)
+}
+
 export default function HomeScreen() {
   const trpc = useTRPC()
+  const { colors, styles } = useTheme()
   const [q, setQ] = useState('')
   const [debouncedQ, setDebouncedQ] = useState('')
   const [stateCode, setStateCode] = useState('')
@@ -75,16 +133,23 @@ export default function HomeScreen() {
   const isLoading = allParks.length === 0 && results.some((r) => r.isLoading)
   const isError = allParks.length === 0 && results.every((r) => r.isError)
 
-  const designations = useMemo(
-    () => [...new Set(allParks.map((p) => p.designation).filter(Boolean))].sort() as string[],
-    [allParks],
-  )
+  const designationOptions = useMemo(() => {
+    const labels = new Set(
+      allParks.map((p) => DESIGNATION_TO_GROUP.get(p.designation) ?? p.designation).filter(Boolean)
+    )
+    return [...labels].sort() as string[]
+  }, [allParks])
 
   const parks = useMemo(() => {
     let result = allParks
     if (debouncedQ) result = result.filter((p) => p.fullName.toLowerCase().includes(debouncedQ.toLowerCase()))
     if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
-    if (designation) result = result.filter((p) => p.designation === designation)
+    if (designation) {
+      const group = DESIGNATION_GROUPS.find((g) => g.label === designation)
+      result = group
+        ? result.filter((p) => group.values.includes(p.designation))
+        : result.filter((p) => p.designation === designation)
+    }
     return [...result].sort((a, b) =>
       sortAsc ? a.fullName.localeCompare(b.fullName) : b.fullName.localeCompare(a.fullName),
     )
@@ -94,63 +159,63 @@ export default function HomeScreen() {
 
   const renderPark = useCallback(({ item }: { item: Park }) => (
     <Link href={`/parks/${item.parkCode}`} asChild>
-      <Pressable className="border-b border-gray-100 px-4 py-3 active:bg-gray-50">
-        <Text className="font-semibold text-gray-900" numberOfLines={1}>
+      <Pressable style={{ ...styles.divider, paddingHorizontal: 16, paddingVertical: 12 }}>
+        <Text style={{ color: styles.text, fontWeight: '600', fontSize: 15 }} numberOfLines={1}>
           {item.fullName}
         </Text>
-        <Text className="text-xs text-gray-400 mt-0.5">
+        <Text style={{ color: styles.textMuted, fontSize: 12, marginTop: 2 }}>
           {[item.designation, item.states].filter(Boolean).join(' · ')}
         </Text>
         {!!item.description && (
-          <Text className="text-sm text-gray-600 mt-1" numberOfLines={2}>
+          <Text style={{ color: styles.textMuted, fontSize: 14, marginTop: 4 }} numberOfLines={2}>
             {item.description}
           </Text>
         )}
       </Pressable>
     </Link>
-  ), [])
+  ), [styles])
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={{ flex: 1, backgroundColor: styles.bg }}>
       {/* Controls */}
-      <View className="px-4 pt-3 pb-2 gap-2 border-b border-gray-100">
+      <View style={{ ...styles.divider, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8, gap: 8 }}>
         <TextInput
           placeholder="Search by name..."
           value={q}
           onChangeText={setQ}
           clearButtonMode="while-editing"
-          className="h-10 rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-900"
-          placeholderTextColor="#9ca3af"
+          style={{ ...styles.inputBase }}
+          placeholderTextColor={colors.mutedForeground}
         />
 
-        <View className="flex-row gap-2">
+        <View style={{ flexDirection: 'row', gap: 8 }}>
           <TouchableOpacity
             onPress={() => setStatePickerVisible(true)}
-            className="flex-1 h-9 rounded-lg border border-gray-200 bg-gray-50 px-3 justify-center"
+            style={{ ...styles.pillBase, flex: 1 }}
           >
-            <Text className="text-sm text-gray-700" numberOfLines={1}>
+            <Text style={{ color: styles.text, fontSize: 14 }} numberOfLines={1}>
               {selectedStateName ?? 'All states'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setDesignationPickerVisible(true)}
-            className="flex-1 h-9 rounded-lg border border-gray-200 bg-gray-50 px-3 justify-center"
+            style={{ ...styles.pillBase, flex: 1 }}
           >
-            <Text className="text-sm text-gray-700" numberOfLines={1}>
+            <Text style={{ color: styles.text, fontSize: 14 }} numberOfLines={1}>
               {designation || 'All types'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setSortAsc((v) => !v)}
-            className="h-9 rounded-lg border border-gray-200 bg-gray-50 px-3 justify-center"
+            style={styles.pillBase}
           >
-            <Text className="text-sm text-gray-700">{sortAsc ? 'A–Z' : 'Z–A'}</Text>
+            <Text style={{ color: styles.text, fontSize: 14 }}>{sortAsc ? 'A–Z' : 'Z–A'}</Text>
           </TouchableOpacity>
         </View>
 
-        <Text className="text-xs text-gray-400">
+        <Text style={{ color: styles.textMuted, fontSize: 12 }}>
           {isLoading
             ? 'Loading…'
             : isError
@@ -163,18 +228,17 @@ export default function HomeScreen() {
 
       {/* List */}
       {isLoading ? (
-        <View className="flex-1">
+        <View style={{ flex: 1 }}>
           {Array.from({ length: 10 }).map((_, i) => (
-            <View key={i} className="border-b border-gray-100 px-4 py-3 gap-2">
-              <View className="h-4 w-2/3 rounded bg-gray-200" />
-              <View className="h-3 w-1/3 rounded bg-gray-100" />
-              <View className="h-3 w-full rounded bg-gray-100" />
-              <View className="h-3 w-4/5 rounded bg-gray-100" />
+            <View key={i} style={{ ...styles.divider, paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}>
+              <View style={{ backgroundColor: styles.muted, height: 16, width: '66%', borderRadius: 4 }} />
+              <View style={{ backgroundColor: styles.muted, height: 12, width: '33%', borderRadius: 4 }} />
+              <View style={{ backgroundColor: styles.muted, height: 12, width: '100%', borderRadius: 4 }} />
             </View>
           ))}
         </View>
       ) : isError ? (
-        <Text className="mt-12 text-center text-sm text-red-500">
+        <Text style={{ marginTop: 48, textAlign: 'center', fontSize: 14, color: '#ef4444' }}>
           Failed to load parks. Check your connection.
         </Text>
       ) : (
@@ -192,26 +256,24 @@ export default function HomeScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setDesignationPickerVisible(false)}
       >
-        <View className="flex-1 bg-white">
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-            <Text className="text-base font-semibold text-gray-900">Select a type</Text>
+        <View style={{ flex: 1, backgroundColor: styles.bg }}>
+          <View style={{ ...styles.divider, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
+            <Text style={{ color: styles.text, fontSize: 16, fontWeight: '600' }}>Select a type</Text>
             <Pressable onPress={() => setDesignationPickerVisible(false)}>
-              <Text className="text-sm text-blue-600">Done</Text>
+              <Text style={{ color: colors.ring, fontSize: 14 }}>Done</Text>
             </Pressable>
           </View>
 
           <FlatList
-            data={['', ...designations]}
+            data={['', ...designationOptions]}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => { setDesignation(item); setDesignationPickerVisible(false) }}
-                className="px-4 py-3 border-b border-gray-50 flex-row items-center justify-between"
+                style={{ ...styles.divider, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
               >
-                <Text className="text-sm text-gray-900">{item || 'All types'}</Text>
-                {designation === item && (
-                  <Text className="text-blue-600 text-sm">✓</Text>
-                )}
+                <Text style={{ color: styles.text, fontSize: 14 }}>{item || 'All types'}</Text>
+                {designation === item && <Text style={{ color: colors.ring, fontSize: 14 }}>✓</Text>}
               </Pressable>
             )}
           />
@@ -225,11 +287,11 @@ export default function HomeScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setStatePickerVisible(false)}
       >
-        <View className="flex-1 bg-white">
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-            <Text className="text-base font-semibold text-gray-900">Select a state</Text>
+        <View style={{ flex: 1, backgroundColor: styles.bg }}>
+          <View style={{ ...styles.divider, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 }}>
+            <Text style={{ color: styles.text, fontSize: 16, fontWeight: '600' }}>Select a state</Text>
             <Pressable onPress={() => setStatePickerVisible(false)}>
-              <Text className="text-sm text-blue-600">Done</Text>
+              <Text style={{ color: colors.ring, fontSize: 14 }}>Done</Text>
             </Pressable>
           </View>
 
@@ -239,12 +301,10 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => { setStateCode(item.code); setStatePickerVisible(false) }}
-                className="px-4 py-3 border-b border-gray-50 flex-row items-center justify-between"
+                style={{ ...styles.divider, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
               >
-                <Text className="text-sm text-gray-900">{item.name}</Text>
-                {stateCode === item.code && (
-                  <Text className="text-blue-600 text-sm">✓</Text>
-                )}
+                <Text style={{ color: styles.text, fontSize: 14 }}>{item.name}</Text>
+                {stateCode === item.code && <Text style={{ color: colors.ring, fontSize: 14 }}>✓</Text>}
               </Pressable>
             )}
           />
