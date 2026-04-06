@@ -39,6 +39,62 @@ const US_STATES = [
   { code: 'AS', name: 'American Samoa' }, { code: 'MP', name: 'Northern Mariana Islands' },
 ]
 
+const DESIGNATION_GROUPS: { label: string; values: string[] }[] = [
+  {
+    label: 'National Battlefields & Military Parks',
+    values: ['National Battlefield', 'National Battlefield Park', 'National Battlefield Site', 'National Military Park'],
+  },
+  {
+    label: 'National Historical Parks',
+    values: ['National Historical Park', 'National Historical Park and Ecological Preserve', 'National Historical Park and Preserve', 'National Historical Reserve', 'Part of Colonial National Historical Park'],
+  },
+  {
+    label: 'National Historic Sites',
+    values: ['National Historic Site', 'National Historic Area'],
+  },
+  {
+    label: 'International Parks & Historic Sites',
+    values: ['International Park', 'International Historic Site'],
+  },
+  {
+    label: 'National Memorials',
+    values: ['Memorial', 'National Memorial'],
+  },
+  {
+    label: 'National Monuments',
+    values: ['National Monument', 'National Monument & Preserve', 'National Monument and Historic Shrine', 'Part of Statue of Liberty National Monument'],
+  },
+  {
+    label: 'National Parks',
+    values: ['National Park', 'National Park & Preserve', 'National Parks', 'National and State Parks'],
+  },
+  {
+    label: 'National Preserves & Reserves',
+    values: ['National Preserve', 'National Reserve', 'Ecological & Historic Preserve'],
+  },
+  {
+    label: 'National Rivers & Scenic Rivers',
+    values: ['National River', 'National River & Recreation Area', 'National Recreational River', 'National Scenic River', 'National Scenic Riverway', 'National Scenic Riverways', 'National Wild and Scenic River', 'Scenic & Recreational River', 'Wild & Scenic River', 'Wild River'],
+  },
+  {
+    label: 'National Trails',
+    values: ['National Geologic Trail', 'National Historic Trail', 'National Scenic Trail'],
+  },
+  {
+    label: 'Parks',
+    values: ['Park'],
+  },
+  {
+    label: 'Parkways',
+    values: ['Memorial Parkway', 'Parkway'],
+  },
+]
+
+const DESIGNATION_TO_GROUP = new Map<string, string>()
+for (const group of DESIGNATION_GROUPS) {
+  for (const v of group.values) DESIGNATION_TO_GROUP.set(v, group.label)
+}
+
 const LIMIT = 20
 const PAGE_STARTS = [0, 150, 300, 450]
 const PAGE_SIZE = 150
@@ -67,16 +123,23 @@ function Home() {
   const isLoading = allParks.length === 0 && results.some((r) => r.isLoading)
   const isError = allParks.length === 0 && results.every((r) => r.isError)
 
-  const designations = React.useMemo(
-    () => [...new Set(allParks.map((p) => p.designation).filter(Boolean))].sort() as string[],
-    [allParks],
-  )
+  const designationOptions = React.useMemo(() => {
+    const labels = new Set(
+      allParks.map((p) => DESIGNATION_TO_GROUP.get(p.designation) ?? p.designation).filter(Boolean)
+    )
+    return [...labels].sort() as string[]
+  }, [allParks])
 
   const filtered = React.useMemo(() => {
     let result = allParks
     if (q) result = result.filter((p) => p.fullName.toLowerCase().includes(q.toLowerCase()))
     if (stateCode) result = result.filter((p) => p.states.split(',').map((s) => s.trim()).includes(stateCode))
-    if (designation) result = result.filter((p) => p.designation === designation)
+    if (designation) {
+      const group = DESIGNATION_GROUPS.find((g) => g.label === designation)
+      result = group
+        ? result.filter((p) => group.values.includes(p.designation))
+        : result.filter((p) => p.designation === designation)
+    }
     return [...result].sort((a, b) =>
       sort === 'fullName' ? a.fullName.localeCompare(b.fullName) : b.fullName.localeCompare(a.fullName),
     )
@@ -120,7 +183,7 @@ function Home() {
           className="neo-input h-9 px-3 text-sm bg-background"
         >
           <option value="">All types</option>
-          {designations.map((d) => (
+          {designationOptions.map((d) => (
             <option key={d} value={d}>{d}</option>
           ))}
         </select>
