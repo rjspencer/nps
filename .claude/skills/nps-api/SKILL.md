@@ -1,4 +1,7 @@
-Fetch data from the National Park Service API and expose it via tRPC.
+---
+name: nps-api
+description: Documents available endpoints in the National Park Service API and how to structure code to fetch NPS data and expose it via tRPC. Includes conventions for API key management, a reusable fetch helper with caching, and example tRPC procedure implementation. 
+---
 
 ## NPS API overview
 
